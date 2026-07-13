@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Florida Hurricane Landfalls</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <style>
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .tab-label {
+            padding: 8px 12px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            margin-right: 2px;
+            border-radius: 4px 4px 0 0;
+            font-weight: bold;
+            font-size: 0.85em;
+            color: #333;
+        }
+        .tab-radio {
+            display: none;
+        }
+        .tab-content {
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 0 4px 4px 4px;
+            background: #fff;
+            display: none;
+            box-sizing: border-box;
+        }
+        /* 4-Tab CSS Toggle Selectors */
+        #tab1-radio:checked ~ #tab1-content,
+        #tab2-radio:checked ~ #tab2-content,
+        #tab3-radio:checked ~ #tab3-content,
+        #tab4-radio:checked ~ #tab4-content {
+            display: block;
+        }
+        #tab1-radio:checked ~ label[for="tab1-radio"],
+        #tab2-radio:checked ~ label[for="tab2-radio"],
+        #tab3-radio:checked ~ label[for="tab3-radio"],
+        #tab4-radio:checked ~ label[for="tab4-radio"] {
+            background: #fff;
+            border-bottom: 2px solid #0076d6;
+            color: #0076d6;
+        }
+        .map-container {
+            width: 100%;
+            height: 520px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .sub {
+            font-size: 0.8em;
+            color: #d63031;
+            display: block;
+            font-weight: normal;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Florida Hurricane Landfalls</h1>
+        <p>HURDAT2 Historical Analysis Report (1900 - 2025)</p>
+    </header>
+
+    <main>
+        {% if error %}
+            <div style="background-color: #ffdddd; color: #900; padding: 12px; border-radius: 6px;">
+                <strong>Parsing Failure:</strong> {{ error }}
+            </div>
+        {% else %}
+            
+            <div class="tabs">
+                <!-- Tab Controls -->
+                <input type="radio" name="dashboard-tabs" id="tab1-radio" class="tab-radio" checked>
+                <label for="tab1-radio" class="tab-label">📊 Data Table</label>
+                
+                <input type="radio" name="dashboard-tabs" id="tab2-radio" class="tab-radio">
+                <label for="tab2-radio" class="tab-label">🗺️ Geospatial Map</label>
+                
+                <input type="radio" name="dashboard-tabs" id="tab3-radio" class="tab-radio">
+                <label for="tab3-radio" class="tab-label">📊 Data Table <span class="sub">(without Landfall indicator)</span></label>
+                
+                <input type="radio" name="dashboard-tabs" id="tab4-radio" class="tab-radio">
+                <label for="tab4-radio" class="tab-label">🗺️ Geospatial Map <span class="sub">(without Landfall indicator)</span></label>
+                
+                <!-- Content 1: Baseline Table -->
+                <div id="tab1-content" class="tab-content">
+                    <h3>Standard Analysis (Using 'L' Indicator)</h3>
+                    <p>Identified <strong>{{ storms_ind|length }}</strong> unique hurricanes.</p>
+                    <table>
+                        <thead>
+                            <tr><th>Storm Name</th><th>Date</th><th>Coordinate Point</th><th>Max Wind</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for storm in storms_ind %}
+                                <tr>
+                                    <td><strong>{{ storm.name }}</strong></td>
+                                    <td>{{ storm.date }}</td>
+                                    <td><code>{{ storm.raw_lat }}, {{ storm.raw_lon }}</code></td>
+                                    <td>{{ storm.max_wind }} kts</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Content 2: Baseline Map -->
+                <div id="tab2-content" class="tab-content">
+                    <h3>Geospatial Track Mapping (Using 'L' Indicator)</h3>
+                    <div class="map-container">{{ map_ind_html|safe }}</div>
+                </div>
+                
+                <!-- Content 3: Spatial Calculated Table -->
+                <div id="tab3-content" class="tab-content">
+                    <h3>Algorithmic Point-in-Polygon Matrix</h3>
+                    <span style="font-weight: bold; color: #d63031;">(without Landfall indicator)</span>
+                    <p style="margin-top:10px;">Calculated <strong>{{ storms_spat|length }}</strong> historical landfalls crossing the US Census Florida state polygon border vectors.</p>
+                    <table>
+                        <thead>
+                            <tr><th>Storm Name</th><th>Date</th><th>Coordinate Point</th><th>Max Wind</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for storm in storms_spat %}
+                                <tr>
+                                    <td><strong>{{ storm.name }}</strong></td>
+                                    <td>{{ storm.date }}</td>
+                                    <td><code>{{ storm.raw_lat }}, {{ storm.raw_lon }}</code></td>
+                                    <td>{{ storm.max_wind }} kts</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Content 4: Spatial Calculated Map -->
+                <div id="tab4-content" class="tab-content">
+                    <h3>Polygon Boundary Transitions Mapping</h3>
+                    <span style="font-weight: bold; color: #d63031; margin-bottom:15px; display:block;">(without Landfall indicator)</span>
+                    <div class="map-container">{{ map_spat_html|safe }}</div>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+</body>
+</html>

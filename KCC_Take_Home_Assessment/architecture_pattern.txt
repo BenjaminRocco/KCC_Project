@@ -1,0 +1,9 @@
+KCC_Take_Home_Assessment/
+│
+├── app.py                # Flask Server & Controller (Generates maps, manages web routing)
+├── parser.py             # Analytical Engine (In-memory streams, string parsers, and spatial models)
+├── requirements.txt      # Dependency manifest
+├── README.md             # High-Level Documentation
+│
+└── templates/
+    └── index.html        # Unified Jinja2 UI View (4-Tab CSS Radio Selector Dashboard)
