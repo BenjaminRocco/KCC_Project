@@ -1,4 +1,4 @@
-KCC_Take_Home_Assessment/
+KCC_Project/
 │
 ├── app.py                # Flask Server & Controller (Generates maps, manages web routing)
 ├── parser.py             # Analytical Engine (In-memory streams, string parsers, and spatial models)
